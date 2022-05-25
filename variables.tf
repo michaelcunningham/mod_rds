@@ -1,6 +1,4 @@
-variable "region" {
-  default = "us-west-2"
-}
+variable "region" {}
 
 # To find which ami to use below, use this
 # aws ec2 describe-images --profile michael --region us-east-1 --owners 099720109477 \
