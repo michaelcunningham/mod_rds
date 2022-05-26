@@ -23,3 +23,8 @@ variable "amis" {
 
 variable "aws_type" { default = "null" }
 
+variable "db_type" { default = "null" }
+
+# The below variables will be handled in the resource and set to false if they are not specifically set in the TF module
+variable "performance_insights_enabled" { default = "null" }
+
