@@ -73,13 +73,13 @@ resource "aws_db_subnet_group" "tf_rds_subnet_group" {
   count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
 
   name        = "tf-subnet-group"
-  subnet_ids  = ["${aws_subnet.tf_rds_subnet_1.id}","${aws_subnet.tf_rds_subnet_2.id}",]
+  subnet_ids  = ["${aws_subnet.tf_rds_subnet_1[count.index].id}","${aws_subnet.tf_rds_subnet_2[count.index].id}",]
 }
 
 resource "aws_network_interface" "tf_rds_interface" {
   count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
 
-  subnet_id   = aws_subnet.tf_rds_subnet_1.id
+  subnet_id   = aws_subnet.tf_rds_subnet_1[count.index].id
   private_ips = ["172.40.10.100"]
 
   tags = {
