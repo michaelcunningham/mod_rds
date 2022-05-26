@@ -44,7 +44,7 @@ resource "aws_vpc" "tf_rds_vpc" {
 }
 
 resource "aws_subnet" "tf_rds_subnet_1" {
-  vpc_id            = aws_vpc.tf_vpc.id
+  vpc_id            = aws_vpc.tf_rds_vpc.id
   cidr_block        = "172.40.10.0/24"
   availability_zone = "us-west-2a"
 
@@ -54,7 +54,7 @@ resource "aws_subnet" "tf_rds_subnet_1" {
 }
 
 resource "aws_subnet" "tf_rds_subnet_2" {
-  vpc_id            = aws_vpc.tf_vpc.id
+  vpc_id            = aws_vpc.tf_rds_vpc.id
   cidr_block        = "172.40.11.0/24"
   availability_zone = "us-west-2b"
 
@@ -68,7 +68,7 @@ resource "aws_db_subnet_group" "tf_rds_subnet_group" {
   subnet_ids  = ["${aws_subnet.tf_rds_subnet_1.id}","${aws_subnet.tf_rds_subnet_2.id}",]
 }
 
-resource "aws_network_interface" "tf_interface" {
+resource "aws_network_interface" "tf_rds_interface" {
   subnet_id   = aws_subnet.tf_rds_subnet_1.id
   private_ips = ["172.40.10.100"]
 
