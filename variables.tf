@@ -1,3 +1,5 @@
+variable "access_key" {}
+variable = "secret_key" {}
 variable "region" {}
 
 # To find which ami to use below, use this
