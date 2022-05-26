@@ -1,3 +1,5 @@
+data "aws_availability_zones" "available" {}
+
 variable "access_key" {}
 
 variable "secret_key" {}
