@@ -12,7 +12,7 @@ resource "aws_subnet" "tf_subnet_1" {
   availability_zone = "us-west-2a"
 
   tags = {
-    Name = "tf-michael-subnet"
+    Name = "tf-michael-subnet-1"
   }
 }
 
@@ -22,7 +22,7 @@ resource "aws_subnet" "tf_subnet_2" {
   availability_zone = "us-west-2b"
 
   tags = {
-    Name = "tf-michael-subnet"
+    Name = "tf-michael-subnet-2"
   }
 }
 
