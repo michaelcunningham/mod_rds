@@ -1,5 +1,5 @@
 resource "aws_instance" "ec2_instance" {
-  count = "${contains(tolist("ec2", "ec2x"), var.aws_type) ? 1 : 0}"
+  count = "${contains(tolist(["ec2", "ec2x"]), var.aws_type) ? 1 : 0}"
 
   ami                     = var.amis[var.region]
   instance_type           = "t3.micro"
