@@ -48,7 +48,7 @@ resource "aws_vpc" "tf_rds_vpc" {
 resource "aws_subnet" "tf_rds_subnet_1" {
   count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
 
-  vpc_id            = aws_vpc.tf_rds_vpc.id[count.index]
+  vpc_id            = aws_vpc.tf_rds_vpc[count.index].id
   cidr_block        = "172.40.10.0/24"
   availability_zone = "us-west-2a"
 
