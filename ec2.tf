@@ -21,7 +21,7 @@ resource "aws_vpc" "tf_ec2_vpc" {
   cidr_block = "172.30.0.0/16"
 
   tags = {
-    Name = "tf-michael-vpc"
+    Name = "tf-ec2-vpc"
   }
 }
 
