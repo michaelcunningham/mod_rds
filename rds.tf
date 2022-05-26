@@ -8,7 +8,7 @@ resource "aws_db_instance" "pg_instance" {
   port                   = "5432"
   username               = "postgres"
   password               = "changeMe"
-  db_subnet_group_name   = "${aws_db_subnet_group.tf_rds_subnet_group.name}"
+  db_subnet_group_name   = "${aws_db_subnet_group.tf_rds_subnet_group[count.index].name}"
   # parameter_group_name   = "${aws_db_parameter_group.db_parameter_group.name}"
   # vpc_security_group_ids = ["${split(",", var.vpc_security_group_ids)}"]
   storage_type           = "gp2"
