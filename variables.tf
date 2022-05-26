@@ -16,3 +16,6 @@ variable "amis" {
     "us-west-2" = "ami-0424f1488823952f7"
   }
 }
+
+variable "aws_type" { default = "null" }
+

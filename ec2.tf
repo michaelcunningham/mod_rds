@@ -1,4 +1,6 @@
 resource "aws_instance" "ec2_instance" {
+  count = "${contains(list("ec2"), var.aws_type) ? 1 : 0}"
+
   ami                     = var.amis[var.region]
   instance_type           = "t3.micro"
   disable_api_termination = false
