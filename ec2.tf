@@ -6,7 +6,7 @@ resource "aws_instance" "ec2_instance" {
   disable_api_termination = false
 
   network_interface {
-    network_interface_id = aws_network_interface.tf_interface[count.index].id
+    network_interface_id = aws_network_interface.tf_ec2_interface[count.index].id
     device_index         = 0
   }
 
@@ -28,7 +28,7 @@ resource "aws_vpc" "tf_ec2_vpc" {
 resource "aws_subnet" "tf_ec2_subnet" {
   count = "${contains(tolist(["ec2"]), var.mod_type) ? 1 : 0}"
 
-  vpc_id            = aws_vpc.tf_vpc[count.index].id
+  vpc_id            = aws_vpc.tf_ec2_vpc[count.index].id
   cidr_block        = "172.30.10.0/24"
   availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
 
@@ -40,7 +40,7 @@ resource "aws_subnet" "tf_ec2_subnet" {
 resource "aws_network_interface" "tf_ec2_interface" {
   count = "${contains(tolist(["ec2"]), var.mod_type) ? 1 : 0}"
 
-  subnet_id   = aws_subnet.tf_subnet_1[count.index].id
+  subnet_id   = aws_subnet.tf_ec2_subnet[count.index].id
   private_ips = ["172.30.10.100"]
 
   tags = {
