@@ -1,14 +1,14 @@
 resource "aws_db_instance" "pg_instance" {
-  count = "${contains(tolist(["pgsql12"]), var.db_type) ? 1 : 0}"
+  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.db_type) ? 1 : 0}"
 
-  identifier             = "tf-michael"
+  identifier             = "tf-rds-pg14"
   engine                 = "postgres"
   engine_version         = "14.2"
   instance_class         = "db.t3.micro"
   port                   = "5432"
   username               = "postgres"
   password               = "changeMe"
-  db_subnet_group_name   = "${aws_db_subnet_group.tf_subnet_group.name}"
+  db_subnet_group_name   = "${aws_db_subnet_group.tf_rds_subnet_group.name}"
   # parameter_group_name   = "${aws_db_parameter_group.db_parameter_group.name}"
   # vpc_security_group_ids = ["${split(",", var.vpc_security_group_ids)}"]
   storage_type           = "gp2"
@@ -34,4 +34,46 @@ resource "aws_db_instance" "pg_instance" {
 #  }
 }
 
+
+resource "aws_vpc" "tf_rds_vpc" {
+  cidr_block = "172.40.0.0/16"
+
+  tags = {
+    Name = "tf-rds-vpc"
+  }
+}
+
+resource "aws_subnet" "tf_rds_subnet_1" {
+  vpc_id            = aws_vpc.tf_vpc.id
+  cidr_block        = "172.40.10.0/24"
+  availability_zone = "us-west-2a"
+
+  tags = {
+    Name = "tf-rds-subnet-1"
+  }
+}
+
+resource "aws_subnet" "tf_rds_subnet_2" {
+  vpc_id            = aws_vpc.tf_vpc.id
+  cidr_block        = "172.40.11.0/24"
+  availability_zone = "us-west-2b"
+
+  tags = {
+    Name = "tf-rds-subnet-2"
+  }
+}
+
+resource "aws_db_subnet_group" "tf_rds_subnet_group" {
+  name        = "tf-subnet-group"
+  subnet_ids  = ["${aws_subnet.tf_rds_subnet_1.id}","${aws_subnet.tf_rds_subnet_2.id}",]
+}
+
+resource "aws_network_interface" "tf_interface" {
+  subnet_id   = aws_subnet.tf_rds_subnet_1.id
+  private_ips = ["172.40.10.100"]
+
+  tags = {
+    Name = "primary_network_interface"
+  }
+}
 
