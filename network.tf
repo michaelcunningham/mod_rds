@@ -32,8 +32,8 @@ resource "aws_db_subnet_group" "tf_subnet_group" {
 }
 
 resource "aws_network_interface" "tf_interface" {
-  subnet_id   = aws_subnet.tf_subnet.id
-  private_ips = ["172.30.10.100","172.30.11.100"]
+  subnet_id   = aws_subnet.tf_subnet_1.id
+  private_ips = ["172.30.10.100"]
 
   tags = {
     Name = "primary_network_interface"
