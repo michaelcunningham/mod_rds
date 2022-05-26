@@ -1,5 +1,5 @@
 resource "aws_db_instance" "pg_instance" {
-  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.db_type) ? 1 : 0}"
+  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
 
   identifier             = "tf-rds-pg14"
   engine                 = "postgres"
@@ -36,6 +36,8 @@ resource "aws_db_instance" "pg_instance" {
 
 
 resource "aws_vpc" "tf_rds_vpc" {
+  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
+
   cidr_block = "172.40.0.0/16"
 
   tags = {
@@ -44,6 +46,8 @@ resource "aws_vpc" "tf_rds_vpc" {
 }
 
 resource "aws_subnet" "tf_rds_subnet_1" {
+  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
+
   vpc_id            = aws_vpc.tf_rds_vpc.id
   cidr_block        = "172.40.10.0/24"
   availability_zone = "us-west-2a"
@@ -54,6 +58,8 @@ resource "aws_subnet" "tf_rds_subnet_1" {
 }
 
 resource "aws_subnet" "tf_rds_subnet_2" {
+  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
+
   vpc_id            = aws_vpc.tf_rds_vpc.id
   cidr_block        = "172.40.11.0/24"
   availability_zone = "us-west-2b"
@@ -64,11 +70,15 @@ resource "aws_subnet" "tf_rds_subnet_2" {
 }
 
 resource "aws_db_subnet_group" "tf_rds_subnet_group" {
+  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
+
   name        = "tf-subnet-group"
   subnet_ids  = ["${aws_subnet.tf_rds_subnet_1.id}","${aws_subnet.tf_rds_subnet_2.id}",]
 }
 
 resource "aws_network_interface" "tf_rds_interface" {
+  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
+
   subnet_id   = aws_subnet.tf_rds_subnet_1.id
   private_ips = ["172.40.10.100"]
 
