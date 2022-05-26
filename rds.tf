@@ -46,7 +46,7 @@ resource "aws_vpc" "tf_rds_vpc" {
 }
 
 resource "aws_subnet" "tf_rds_subnet_1" {
-  vpc_id            = aws_vpc.tf_rds_vpc[count.index]
+  vpc_id            = aws_vpc.tf_rds_vpc.id[count.index]
   cidr_block        = "172.40.10.0/24"
   availability_zone = "us-west-2a"
 
