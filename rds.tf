@@ -10,7 +10,7 @@ resource "aws_db_instance" "pg_instance" {
   password               = "changeMe"
   db_subnet_group_name   = "${aws_db_subnet_group.tf_rds_subnet_group[count.index].name}"
   # parameter_group_name   = "${aws_db_parameter_group.db_parameter_group.name}"
-  # vpc_security_group_ids = ["${split(",", var.vpc_security_group_ids)}"]
+  vpc_security_group_ids = "${aws_security_group.tf_rds_security_group.id}"
   storage_type           = "gp2"
   # deletion_protection    = "${var.deletion_protection}"
 
@@ -98,14 +98,30 @@ resource "aws_db_subnet_group" "tf_rds_subnet_group" {
   subnet_ids  = ["${aws_subnet.tf_rds_subnet_1[count.index].id}","${aws_subnet.tf_rds_subnet_2[count.index].id}",]
 }
 
-# resource "aws_network_interface" "tf_rds_interface" {
-#   count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
-# 
-#   subnet_id   = aws_subnet.tf_rds_subnet_1[count.index].id
-#   private_ips = ["172.40.10.100"]
-# 
-#   tags = {
-#     Name = "primary_network_interface"
-#   }
-# }
+resource "aws_security_group" "tf_rds_security_group" {
+  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
+
+  name        = "tf_rds_security_group"
+  description = "Terraform example RDS MySQL server"
+  vpc_id      = "${aws_vpc.tf_rds_vpc[count.index].id}"
+
+  # Keep the instance private by only allowing traffic from the web server.
+  ingress {
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    # security_groups = ["${aws_security_group.default.id}"]
+  }
+
+  # Allow all outbound traffic.
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags {
+    Name = "tf-rds-security-group"
+  }
+}
 
