@@ -47,12 +47,27 @@ resource "aws_vpc" "tf_rds_vpc" {
   }
 }
 
+resource "aws_internet_gateway" "tf_rds_gateway" {
+  vpc_id = "${aws_vpc.tf_rds_vpc.id}"
+
+  tags {
+    Name = "tf-rds-internet-gateway"
+  }
+}
+
+resource "aws_route" "route" {
+  route_table_id         = "${aws_vpc.tf_rds_vpc.main_route_table_id}"
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = "${aws_internet_gateway.tf_rds_gateway.id}"
+}
+
 resource "aws_subnet" "tf_rds_subnet_1" {
   count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
 
-  vpc_id            = aws_vpc.tf_rds_vpc[count.index].id
-  cidr_block        = "172.40.10.0/24"
-  availability_zone = "us-west-2a"
+  vpc_id                  = aws_vpc.tf_rds_vpc[count.index].id
+  cidr_block              = "172.40.10.0/24"
+  availability_zone       = "us-west-2a"
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "tf-rds-subnet-1"
@@ -62,9 +77,10 @@ resource "aws_subnet" "tf_rds_subnet_1" {
 resource "aws_subnet" "tf_rds_subnet_2" {
   count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
 
-  vpc_id            = aws_vpc.tf_rds_vpc[count.index].id
-  cidr_block        = "172.40.11.0/24"
-  availability_zone = "us-west-2b"
+  vpc_id                  = aws_vpc.tf_rds_vpc[count.index].id
+  cidr_block              = "172.40.11.0/24"
+  availability_zone       = "us-west-2b"
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "tf-rds-subnet-2"
@@ -75,7 +91,15 @@ resource "aws_db_subnet_group" "tf_rds_subnet_group" {
   count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
 
   name        = "tf-subnet-group"
+  vpc_id      = aws_vpc.tf_rds_vpc[count.index].id
   subnet_ids  = ["${aws_subnet.tf_rds_subnet_1[count.index].id}","${aws_subnet.tf_rds_subnet_2[count.index].id}",]
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 # resource "aws_network_interface" "tf_rds_interface" {
