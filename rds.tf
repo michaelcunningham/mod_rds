@@ -52,7 +52,7 @@ resource "aws_internet_gateway" "tf_rds_gateway" {
 
   vpc_id = "${aws_vpc.tf_rds_vpc[count.index].id}"
 
-  tags {
+  tags = {
     Name = "tf-rds-internet-gateway"
   }
 }
@@ -98,7 +98,7 @@ resource "aws_db_subnet_group" "tf_rds_subnet_group" {
   # vpc_id      = aws_vpc.tf_rds_vpc[count.index].id
   subnet_ids  = ["${aws_subnet.tf_rds_subnet_1[count.index].id}","${aws_subnet.tf_rds_subnet_2[count.index].id}",]
 
-  egress {
+  egress = {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
