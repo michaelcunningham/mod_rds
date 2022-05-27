@@ -19,6 +19,8 @@ resource "aws_db_instance" "pg_instance" {
   # monitoring_role_arn        = "${var.monitoring_role_arn[var.deployment_env]}"
   performance_insights_enabled = "${var.performance_insights_enabled == "" ? var.performance_insights_enabled : false}"
 
+  skip_final_snapshot     = "${var.skip_final_snapshot}"
+
   # multi_az              = "${var.multi_az[var.deployment_env]}"
   allocated_storage     = "20"
   # copy_tags_to_snapshot = "${var.copy_tags_to_snapshot}"
