@@ -10,7 +10,7 @@ resource "aws_db_instance" "pg_instance" {
   password               = "changeMe"
   db_subnet_group_name   = "${aws_db_subnet_group.tf_rds_subnet_group[count.index].name}"
   # parameter_group_name   = "${aws_db_parameter_group.db_parameter_group.name}"
-  vpc_security_group_ids = "${aws_security_group.tf_rds_security_group.id}"
+  vpc_security_group_ids = "${aws_security_group.tf_rds_security_group[count.index].id}"
   storage_type           = "gp2"
   # deletion_protection    = "${var.deletion_protection}"
 
@@ -120,7 +120,7 @@ resource "aws_security_group" "tf_rds_security_group" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags {
+  tags = {
     Name = "tf-rds-security-group"
   }
 }
