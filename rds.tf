@@ -8,9 +8,10 @@ resource "aws_db_instance" "pg_instance" {
   port                   = "5432"
   username               = "postgres"
   password               = "changeMe"
-  db_subnet_group_name   = "${aws_db_subnet_group.tf_rds_subnet_group[count.index].name}"
+  # db_subnet_group_name   = "${aws_db_subnet_group.tf_rds_subnet_group[count.index].name}"
+  db_subnet_group_name   = "tf_rds_subnet_group"
   # parameter_group_name   = "${aws_db_parameter_group.db_parameter_group.name}"
-  vpc_security_group_ids = "${aws_security_group.tf_rds_security_group[count.index].id}"
+  vpc_security_group_ids = "sg-084ed0cc8990c3c5a"
   storage_type           = "gp2"
   # deletion_protection    = "${var.deletion_protection}"
 
@@ -34,94 +35,5 @@ resource "aws_db_instance" "pg_instance" {
 #    Environment = "${var.environment}"
 #    Name        = "${lower(var.app_name)}"
 #  }
-}
-
-
-resource "aws_vpc" "tf_rds_vpc" {
-  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
-
-  cidr_block = "172.40.0.0/16"
-
-  tags = {
-    Name = "tf-rds-vpc"
-  }
-}
-
-resource "aws_internet_gateway" "tf_rds_gateway" {
-  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
-
-  vpc_id = "${aws_vpc.tf_rds_vpc[count.index].id}"
-
-  tags = {
-    Name = "tf-rds-internet-gateway"
-  }
-}
-
-resource "aws_route" "route" {
-  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
-
-  route_table_id         = "${aws_vpc.tf_rds_vpc[count.index].main_route_table_id}"
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "${aws_internet_gateway.tf_rds_gateway[count.index].id}"
-}
-
-resource "aws_subnet" "tf_rds_subnet_1" {
-  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
-
-  vpc_id                  = aws_vpc.tf_rds_vpc[count.index].id
-  cidr_block              = "172.40.10.0/24"
-  availability_zone       = "us-west-2a"
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name = "tf-rds-subnet-1"
-  }
-}
-
-resource "aws_subnet" "tf_rds_subnet_2" {
-  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
-
-  vpc_id                  = aws_vpc.tf_rds_vpc[count.index].id
-  cidr_block              = "172.40.11.0/24"
-  availability_zone       = "us-west-2b"
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name = "tf-rds-subnet-2"
-  }
-}
-
-resource "aws_db_subnet_group" "tf_rds_subnet_group" {
-  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
-
-  name        = "tf-subnet-group"
-  subnet_ids  = ["${aws_subnet.tf_rds_subnet_1[count.index].id}","${aws_subnet.tf_rds_subnet_2[count.index].id}",]
-}
-
-resource "aws_security_group" "tf_rds_security_group" {
-  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
-
-  name        = "tf_rds_security_group"
-  description = "Terraform example RDS MySQL server"
-  vpc_id      = "${aws_vpc.tf_rds_vpc[count.index].id}"
-
-  # Keep the instance private by only allowing traffic from the web server.
-  ingress {
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    # security_groups = ["${aws_security_group.default.id}"]
-  }
-
-  # Allow all outbound traffic.
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = {
-    Name = "tf-rds-security-group"
-  }
 }
 
