@@ -60,9 +60,9 @@ resource "aws_internet_gateway" "tf_rds_gateway" {
 resource "aws_route" "route" {
   count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
 
-  route_table_id         = "${aws_vpc.tf_rds_vpc.main_route_table_id}"
+  route_table_id         = "${aws_vpc.tf_rds_vpc[count.index].main_route_table_id}"
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "${aws_internet_gateway.tf_rds_gateway.id}"
+  gateway_id             = "${aws_internet_gateway[count.index].tf_rds_gateway.id}"
 }
 
 resource "aws_subnet" "tf_rds_subnet_1" {
@@ -91,11 +91,11 @@ resource "aws_subnet" "tf_rds_subnet_2" {
   }
 }
 
-resource "aws_db_subnet_group" "tf_rds_subnet_group" {
+resource "aws_subnet_group" "tf_rds_subnet_group" {
   count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
 
   name        = "tf-subnet-group"
-  # vpc_id      = aws_vpc.tf_rds_vpc[count.index].id
+  vpc_id      = aws_vpc.tf_rds_vpc[count.index].id
   subnet_ids  = ["${aws_subnet.tf_rds_subnet_1[count.index].id}","${aws_subnet.tf_rds_subnet_2[count.index].id}",]
 
   egress = {
