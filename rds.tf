@@ -11,7 +11,8 @@ resource "aws_db_instance" "pg_instance" {
   # db_subnet_group_name   = "${aws_db_subnet_group.tf_rds_subnet_group[count.index].name}"
   db_subnet_group_name   = "tf_rds_subnet_group"
   # parameter_group_name   = "${aws_db_parameter_group.db_parameter_group.name}"
-  vpc_security_group_ids = ["sg-084ed0cc8990c3c5a"]
+  # vpc_security_group_ids = ["sg-084ed0cc8990c3c5a"]
+  vpc_security_group_ids = ["${var.vpc_security_group_ids}"]
   storage_type           = "gp2"
   # deletion_protection    = "${var.deletion_protection}"
 
