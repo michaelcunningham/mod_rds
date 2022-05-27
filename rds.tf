@@ -48,6 +48,8 @@ resource "aws_vpc" "tf_rds_vpc" {
 }
 
 resource "aws_internet_gateway" "tf_rds_gateway" {
+  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
+
   vpc_id = "${aws_vpc.tf_rds_vpc[count.index].id}"
 
   tags {
@@ -56,6 +58,8 @@ resource "aws_internet_gateway" "tf_rds_gateway" {
 }
 
 resource "aws_route" "route" {
+  count = "${contains(tolist(["pgsql12", "pgsql14"]), var.mod_type) ? 1 : 0}"
+
   route_table_id         = "${aws_vpc.tf_rds_vpc.main_route_table_id}"
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = "${aws_internet_gateway.tf_rds_gateway.id}"
